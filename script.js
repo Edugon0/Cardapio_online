@@ -83,105 +83,99 @@ function updateCartModal() {
         cartItemsContainer.appendChild(cartItemElement);
     });
 
-    cartTotal.textContent = total.toLocaleString("pt-BR",{
-        style: "Currency",
+    cartTotal.textContent = total.toLocaleString("pt-BR", {
+        style: "currency",
         currency: "BRL"
     });
 
     cartCounter.innerHTML = cart.length;
 }
 
-
+// Evento para remover itens do carrinho
 cartItemsContainer.addEventListener("click", function(event){
     if(event.target.classList.contains("remove-btn")){
         const name = event.target.getAttribute("data-name")
-
         removeItemCart(name);
     }
 })
 
-
 function removeItemCart(name){
-    const index = cart.findIndex(item=> item.name === name);
+    const index = cart.findIndex(item => item.name === name);
 
     if(index !== -1){
         const item = cart[index];
 
         if(item.quantity > 1){
             item.quantity -= 1;
-            updateCartModal();
-            return;
+        } else {
+            cart.splice(index, 1);
         }
-
-        cart.splice(index, 1);
-        updateCartModal()
+        updateCartModal();
     }
 }
 
-
+// Validação do endereço de entrega
 addressInput.addEventListener("input", function(event){
-    let inputValue = event.target.value
+    let inputValue = event.target.value;
 
     if(inputValue !== ""){
-        addressInput.classList.remove("border-red-500")
-        addressWarn.classList.remove("hidden")
+        addressInput.classList.remove("border-red-500");
+        addressWarn.classList.add("hidden");
     }
-})
+});
 
+// Finalizar compra
 checkoutBtn.addEventListener("click", function(){
-
-    const isOpen = checkRestaunrant();
+    const isOpen = checkRestaurant();
     if(!isOpen){
-        Toastify({text: "O restaurante está fora de serviço(Fechado)",
+        Toastify({
+            text: "O restaurante está fora de serviço (Fechado)",
             duration: 3000,
             close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
             style: {
               background: "#ef4444",
             },
         }).showToast();
-
-        
-}
-
-    if(cart.length === 0) return;
-    if(addressInput.value === ""){
-        addressWarn.classList.remove("hidden")
-        addressInput.classList.add("border-red-500")
         return;
     }
 
+    if(cart.length === 0) return;
+    if(addressInput.value === ""){
+        addressWarn.classList.remove("hidden");
+        addressInput.classList.add("border-red-500");
+        return;
+    }
 
-    const cartItems = cart.map((item)=>{
-        return(
-            `${item.name} Quantidade:(${item.quantity}) Preço: R$ ${item.price} |`
-        )
-    }).join("")
+    const cartItems = cart.map((item) => {
+        return `${item.name} Quantidade: (${item.quantity}) Preço: R$ ${item.price.toFixed(2)} |`;
+    }).join("");
 
-    const message= encodeURIComponent(cartItems)
-    const phone = "123456789"
+    const message = encodeURIComponent(`Itens: ${cartItems} Endereço: ${addressInput.value}`);
+    const phone = "123456789";
 
-    window.open(`https://wa.me/${phone}?text=${message} endereço: ${addressInput.value}`, "_blank")
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
 
     cart = [];
     updateCartModal();
-})
+});
 
-
-function checkRestaunrant(){
+// Função para verificar se o restaurante está aberto
+function checkRestaurant(){
     const data = new Date();
     const hora = data.getHours();
     return hora >= 18 && hora < 22;
 }
 
-const isOpen = checkRestaunrant()
+// Atualizar o indicador de status do restaurante
+const isOpen = checkRestaurant();
 
 if(isOpen){
     spanItem.classList.remove("bg-red-500");
     spanItem.classList.add("bg-green-600");
-} else{
+} else {
     spanItem.classList.add("bg-red-500");
     spanItem.classList.remove("bg-green-600");
 }
