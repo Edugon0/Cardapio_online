@@ -1,15 +1,19 @@
 {
+  "homepage": "https://edugon0.github.io/Cardapio_online/",
   "name": "cardapio_online",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tailwindcss -i ./styles/style.css -o ./styles/output.css --watch"
+    "dev": "npx tailwindcss -i ./styles/style.css -o ./styles/output.css --watch",
+    "predeploy": "npm run dev",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "gh-pages": "^6.1.1",
     "tailwindcss": "^3.4.3"
   }
 }
